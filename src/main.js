@@ -1,8 +1,12 @@
 import { createServer } from "http";
+import { readFile } from "fs";
+import { resolve } from "path";
+import { parse } from "querystring";
 
 const server = createServer((request, response) => {
     switch (request.url) {
-        case '/status': {
+
+        case '/status':
             response.writeHead(200, {
                 'Content-type': 'application/json',
             });
@@ -13,11 +17,57 @@ const server = createServer((request, response) => {
             );
             response.end();
             break;
+
+
+        case '/sign-in':{
+            const path = resolve(__dirname, "./pages/sign-in.html");
+            readFile(path, (error, file) => {
+                if (error) {
+                    response.writeHead(500, "Can't process HTML file");
+                    response.end();
+                    return;
+                }
+
+                response.writeHead(200);
+                response.write(file);
+                response.end();
+            });
+            break;
         }
-        default: {
+
+        case '/authenticate':
+            let data = '';
+            request.on('data', (chunk) => {
+                data += chunk;
+            });
+            request.on('end', ()=>{
+                response.writeHead(301, {
+                    Location: '/home',
+                });
+                response.end();
+            });
+            break;
+
+            case '/home':{
+                const path2 = resolve(__dirname, "./pages/home.html");
+                readFile(path2, (error, file) => {
+                    if (error) {
+                        response.writeHead(500, "Can't process HTML file");
+                        response.end();
+                        return;
+                    }
+    
+                    response.writeHead(200);
+                    response.write(file);
+                    response.end();
+                });
+                break;
+            }
+
+        default:
             response.writeHead(404, 'Service not found');
             response.end();
-        }
+
     }
 });
 
