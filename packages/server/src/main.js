@@ -1,5 +1,4 @@
 import { createServer } from "http";
-import { parse } from "querystring";
 
 const server = createServer((request, response) => {
     switch (request.url) {
@@ -22,7 +21,6 @@ const server = createServer((request, response) => {
                 data += chunk;
             });
             request.on('end', ()=>{
-                const params = parse(data);
                 response.end();
             });
             break;
